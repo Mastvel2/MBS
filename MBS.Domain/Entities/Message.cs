@@ -1,4 +1,6 @@
-﻿namespace MBS.Domain;
+﻿using System;
+
+namespace MBS.Domain;
 
 public class Message
 {

@@ -1,4 +1,6 @@
-﻿namespace MBS.Host.Dtos;
+﻿using System;
+
+namespace MBS.Host.Dtos;
 
 public class MessageDto
 {
