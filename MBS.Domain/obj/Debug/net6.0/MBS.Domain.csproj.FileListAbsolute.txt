@@ -1,0 +1,12 @@
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\bin\Debug\net6.0\MBS.Domain.deps.json
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\bin\Debug\net6.0\MBS.Domain.dll
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\bin\Debug\net6.0\ref\MBS.Domain.dll
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\bin\Debug\net6.0\MBS.Domain.pdb
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.csproj.AssemblyReference.cache
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.AssemblyInfoInputs.cache
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.AssemblyInfo.cs
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.dll
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\ref\MBS.Domain.dll
+C:\Users\Mastvel2\RiderProjects\MBS\MBS.Domain\obj\Debug\net6.0\MBS.Domain.pdb

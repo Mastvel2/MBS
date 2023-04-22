@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "bDewxHNI+5qVgJaFZah1frcRHsXNKEC9M3RW2ysbTJg=",
+  "Source": "MBS.Host",
+  "BasePath": "_content/MBS.Host",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
