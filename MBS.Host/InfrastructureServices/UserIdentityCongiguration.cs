@@ -10,6 +10,12 @@ public class UserIdentityConfiguration : IEntityTypeConfiguration<UserIdentity>
     {
         // Устанавливаем первичный ключ
         builder.HasKey(u => u.Username);
+        builder.Property(ui => ui.Username);
+        // Маппим приватные свойства hash и salt для EF Core
+        builder.Property<string>("hash");
+        builder.Property<string>("salt");
+        // Устанавливаем индексы
+        builder.HasIndex(ui => ui.Username);
     }
 }
 

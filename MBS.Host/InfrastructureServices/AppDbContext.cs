@@ -15,4 +15,10 @@ public class AppDbContext : DbContext
     {
         optionsBuilder.UseSqlServer("YourConnectionString");
     }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfiguration(new UserIdentityConfiguration());
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+    }
 }
