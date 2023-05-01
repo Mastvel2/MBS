@@ -1,10 +1,20 @@
-﻿namespace MBS.Domain;
+﻿namespace MBS.Domain.Entities;
 
-public class User 
+public class User
 {
-    public int Id { get; set; }
-    public string Email { get; set; }
-    public string PasswordHash { get; set; }
-    public string PasswordSalt { get; set; }
+
+    public User(string username)
+    {
+        this.Username = username;
+    }
     
+    public string Username { get; set; }
+
+    public string AboutMe { get; set; }
+    
+    public DateTime DateOfBirth { get; set; }
+
+    public string ProfilePictureUrl { get; set; }
+
+    public DateTime LastLogin { get; set; }
 }

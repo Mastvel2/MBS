@@ -1,37 +1,27 @@
-﻿using System.Threading.Tasks;
-using MBS.Domain;
-using Microsoft.EntityFrameworkCore;
+﻿using MBS.Domain.Entities;
+using MBS.Domain.Repositories;
 
 namespace MBS.Host.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly AppDbContext _context;
-
-    public UserRepository(AppDbContext context)
+    public Task<User> GetByIdAsync(int id)
     {
-        _context = context;
+        throw new NotImplementedException();
     }
 
-    public async Task<User> GetByIdAsync(int id)
+    public Task<User> GetByNameAsync(string name)
     {
-        return await _context.Users.FindAsync(id);
+        throw new NotImplementedException();
     }
 
-    public async Task<User> GetByEmailAsync(string email)
+    public Task AddAsync(User user)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        throw new NotImplementedException();
     }
 
-    public async Task AddAsync(User user)
+    public Task UpdateAsync(User user)
     {
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateAsync(User user)
-    {
-        _context.Users.Update(user);
-        await _context.SaveChangesAsync();
+        throw new NotImplementedException();
     }
 }

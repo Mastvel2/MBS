@@ -1,10 +1,15 @@
-﻿using MBS.Domain;
+﻿using MBS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+
+namespace MBS.Host.InfrastructureServices;
 
 public class AppDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    
     public DbSet<Message> Messages { get; set; }
+    
+    public DbSet<UserIdentity> UserIdentities { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

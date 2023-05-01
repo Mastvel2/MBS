@@ -1,12 +1,7 @@
-﻿using System;
-using System.IO;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
-namespace MBS.Domain;
+namespace MBS.Domain.Services;
 
-/// <summary>
-/// Класс AesEncryption для шифрования и дешифрования сообщений
-/// </summary>
 public class AesEncryption
 {
     private static readonly int KeySize = 256;
@@ -15,11 +10,18 @@ public class AesEncryption
 
     public static string Encrypt(string plainText)
     {
-        using (var aes = new AesManaged { KeySize = KeySize, BlockSize = BlockSize })
+        using (var aes = Aes.Create())
         {
-            var key = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 1000);
-            aes.Key = key.GetBytes(KeySize / 8);
-            aes.IV = key.GetBytes(BlockSize / 8);
+            aes.KeySize = KeySize;
+            aes.BlockSize = BlockSize;
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                aes.Key = new byte[KeySize / 8];
+                rng.GetBytes(aes.Key);
+                aes.IV = new byte[BlockSize / 8];
+                rng.GetBytes(aes.IV);
+            }
 
             using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
             {
@@ -39,11 +41,18 @@ public class AesEncryption
 
     public static string Decrypt(string encryptedText)
     {
-        using (var aes = new AesManaged { KeySize = KeySize, BlockSize = BlockSize })
+        using (var aes = Aes.Create())
         {
-            var key = new Rfc2898DeriveBytes(EncryptionKey, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 }, 1000);
-            aes.Key = key.GetBytes(KeySize / 8);
-            aes.IV = key.GetBytes(BlockSize / 8);
+            aes.KeySize = KeySize;
+            aes.BlockSize = BlockSize;
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                aes.Key = new byte[KeySize / 8];
+                rng.GetBytes(aes.Key);
+                aes.IV = new byte[BlockSize / 8];
+                rng.GetBytes(aes.IV);
+            }
 
             using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
             {

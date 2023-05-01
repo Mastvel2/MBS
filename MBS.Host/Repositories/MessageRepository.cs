@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MBS.Domain;
+﻿using MBS.Domain.Entities;
+using MBS.Domain.Repositories;
+using MBS.Host.InfrastructureServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace MBS.Host.Repositories;

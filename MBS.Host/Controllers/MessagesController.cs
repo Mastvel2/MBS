@@ -4,9 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MBS.Host.Dtos;
-using MBS.Domain.Services; // Импортируйте пространство имен для IMessageService и IUserService
-using MBS.Domain;
-using MBS.Host.Host_services; // Импортируйте пространство имен для Message
+using MBS.Domain.Entities;
+using MBS.Domain.Services;
 
 [Authorize]
 [ApiController]
@@ -14,10 +13,14 @@ using MBS.Host.Host_services; // Импортируйте пространств
 public class MessagesController : ControllerBase
 {
     private readonly IMessageService _messageService;
+    private readonly IUserService _userService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public MessagesController(IMessageService messageService, IUserService userService)
+    public MessagesController(IMessageService messageService, IUserService userService, IUnitOfWork unitOfWork)
     {
         _messageService = messageService;
+        _userService = userService;
+        _unitOfWork = unitOfWork;
     }
 
     [HttpGet]

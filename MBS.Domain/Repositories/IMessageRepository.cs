@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using MBS.Domain;
+﻿using MBS.Domain.Entities;
 
-namespace MBS.Host.Repositories;
+namespace MBS.Domain.Repositories;
 
 public interface IMessageRepository
 {
