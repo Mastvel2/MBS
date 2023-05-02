@@ -1,72 +1,56 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MBS.Domain.Entities;
-using MBS.Domain.Repositories;
-using MBS.Domain.Services;
+﻿using MBS.Host.ApplicationServices;
 using MBS.Host.Dtos;
+using Microsoft.AspNetCore.Mvc;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AccountController : ControllerBase
+namespace MBS.Host.Controllers
 {
-    // Здесь должен быть ваш код для работы с репозиторием или службой пользователей
-    private readonly IUserService _userService;
-    private readonly IUserRepository _userRepository;
-    private readonly IUnitOfWork _unitOfWork;
-
-    public AccountController(IUserRepository userRepository, IUserService? userService, IUnitOfWork unitOfWork)
+    [ApiController]
+    [Route("api/[controller]")]
+    // Класс контроллера для работы с аккаунтами пользователей
+    public class AccountController : ControllerBase
     {
-        _userRepository = userRepository;
-        _userService = userService;
-        _unitOfWork = unitOfWork;
-    }
-    
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserDto userDto)
-    {
-        // Проверьте существующих пользователей с таким же адресом электронной почты
-        var existingUser = await _userRepository.GetByNameAsync(userDto.Email);
-        if (existingUser != null)
+        private readonly IUserIdentityService _userIdentityService;
+
+        // Конструктор, принимает сервис IUserIdentityService
+        public AccountController(IUserIdentityService userIdentityService)
         {
-            return BadRequest("Пользователь с таким логином уже существует.");
-        }
-        // Создайте нового пользователя
-        var user = new User
-        {
-            Email = userDto.Email
-        };
-        string passwordSalt = Password.GenerateSalt();
-        string passwordHash = Password.GenerateHash(userDto.Password, passwordSalt);
-
-        user.PasswordHash = passwordHash;
-        user.PasswordSalt = passwordSalt;
-
-        // Сохраните нового пользователя в базе данных
-        await _userRepository.AddAsync(user);
-
-        // Вернуть успешный результат с идентификатором пользователя
-        return Ok(new { Id = user.Id });
-        
-    }
-
-    [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] UserDto userDto)
-    {
-        // Аутентификация пользователя
-        var user = await _userRepository.GetByNameAsync(userDto.Email);
-        var isPasswordValid = Password.VerifyPassword(userDto.Password, user.PasswordHash, user.PasswordSalt);
-
-        if (!isPasswordValid)
-        {
-            return Unauthorized("Invalid email or password.");
+            _userIdentityService = userIdentityService ?? throw new ArgumentNullException(nameof(userIdentityService));
         }
 
-        var JWTtoken = _userService.GenerateJwtToken(user);
+        // Метод для регистрации пользователя
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegistrationDto userRegistrationDto)
+        {
+            try
+            {
+                // Вызываем метод регистрации из сервиса и передаем DTO
+                await _userIdentityService.RegisterAsync(userRegistrationDto);
+                // В случае успеха возвращаем статус 200 (OK) и сообщение
+                return Ok("User successfully registered.");
+            }
+            catch (Exception ex)
+            {
+                // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
+                return BadRequest(ex.Message);
+            }
+        }
 
-        // Вернуть успешный результат с JWT
-        return Ok(new { Token = JWTtoken });
-        /*  // Реализуем логику проверки пользователя и пароля
-        // Если пользователь найден и пароль верный, генерируется JWT токен
-
-        
+        // Метод для авторизации пользователя
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserAuthorizationDto userAuthorizationDto)
+        {
+            try
+            {
+                // Вызываем метод авторизации из сервиса и передаем DTO
+                var tokenDto = await _userIdentityService.AuthorizeAsync(userAuthorizationDto);
+                // В случае успеха возвращаем статус 200 (OK) и данные о токене
+                return Ok(tokenDto);
+            }
+            catch (Exception ex)
+            {
+                // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

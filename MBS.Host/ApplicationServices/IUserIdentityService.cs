@@ -6,6 +6,6 @@ namespace MBS.Host.ApplicationServices
     public interface IUserIdentityService
     {
         Task RegisterAsync(UserRegistrationDto dto);
-        Task<User> AuthorizeAsync(UserAuthorizationDto dto);
+        Task<TokenDto> AuthorizeAsync(UserAuthorizationDto dto);
     }
 }

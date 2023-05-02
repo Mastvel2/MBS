@@ -9,13 +9,16 @@ public class UserIdentityConfiguration : IEntityTypeConfiguration<UserIdentity>
     public void Configure(EntityTypeBuilder<UserIdentity> builder)
     {
         // Устанавливаем первичный ключ
-        builder.HasKey(u => u.Username);
+        builder.HasKey(ui => ui.Username);
+        // Устанавливаем имя схемы и таблицы
+        builder.ToTable("UserIdentities", "dbo");
+        
         builder.Property(ui => ui.Username);
-        // Маппим приватные свойства hash и salt для EF Core
-        builder.Property<string>("hash");
-        builder.Property<string>("salt");
-        // Устанавливаем индексы
-        builder.HasIndex(ui => ui.Username);
+        // Маппим приватные поля hash и salt для EF Core
+        builder.Property<string>("hash")
+            .HasColumnName("Hash");
+        builder.Property<string>("salt")
+            .HasColumnName("Salt");
     }
 }
 
