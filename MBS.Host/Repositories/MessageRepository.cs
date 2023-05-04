@@ -3,7 +3,7 @@ using MBS.Domain.Repositories;
 using MBS.Host.InfrastructureServices;
 using Microsoft.EntityFrameworkCore;
 
-namespace MBS.Host.Repositories;
+/*namespace MBS.Host.Repositories;
 
 public class MessageRepository : IMessageRepository
 {
@@ -31,4 +31,4 @@ public class MessageRepository : IMessageRepository
         await _context.Messages.AddAsync(message);
         await _context.SaveChangesAsync();
     }
-}
+}*/

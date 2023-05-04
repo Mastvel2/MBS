@@ -12,7 +12,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Username);
         
         // Устанавливаем имя схемы и таблицы
-        builder.ToTable("Users", "dbo");
+        builder.ToTable("Users", "public");
         
         // Определяем свойства
         builder.Property(u => u.Username)

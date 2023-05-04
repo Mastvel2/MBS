@@ -11,7 +11,7 @@ public class UserIdentityConfiguration : IEntityTypeConfiguration<UserIdentity>
         // Устанавливаем первичный ключ
         builder.HasKey(ui => ui.Username);
         // Устанавливаем имя схемы и таблицы
-        builder.ToTable("UserIdentities", "dbo");
+        builder.ToTable("UserIdentities", "public");
         
         builder.Property(ui => ui.Username);
         // Маппим приватные поля hash и salt для EF Core

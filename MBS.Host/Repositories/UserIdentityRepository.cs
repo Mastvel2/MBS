@@ -1,10 +1,11 @@
 using MBS.Domain.Entities;
+using MBS.Domain.Repositories;
 using MBS.Host.InfrastructureServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace MBS.Host.Repositories;
 
-public class UserIdentityRepository
+public class UserIdentityRepository : IUserIdentityRepository
 {
     private readonly AppDbContext _context;
 
@@ -23,8 +24,8 @@ public class UserIdentityRepository
         return this._context.UserIdentities.AnyAsync(identity => identity.Username == username);
     }
 
-    public void Add(UserIdentity userIdentity)
+    public async Task Add(UserIdentity userIdentity)
     {
-        this._context.UserIdentities.Add(userIdentity);
+        await _context.UserIdentities.AddAsync(userIdentity);
     }
 }

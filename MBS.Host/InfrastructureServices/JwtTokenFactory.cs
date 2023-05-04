@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MBS.Domain.Entities;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MBS.Host.InfrastructureServices;
@@ -10,11 +12,12 @@ public class JwtTokenFactory : ITokenFactory
     private readonly string secretKey;
     private readonly int expirationMinutes;
 
-    public JwtTokenFactory(string secretKey, int expirationMinutes)
+    public JwtTokenFactory(IOptions<JwtSettings> jwtSettings)
     {
-        this.secretKey = secretKey;
-        this.expirationMinutes = expirationMinutes;
+        this.secretKey = jwtSettings.Value.SecretKey;
+        this.expirationMinutes = jwtSettings.Value.ExpirationMinutes;
     }
+
 
     public string Create(string username)
     {

@@ -36,7 +36,8 @@ public class UserIdentityService : IUserIdentityService
 
         var userIdentity = new UserIdentity(dto.Username, dto.Password);
         await this._userIdentityRepository.Add(userIdentity);
-        var user = new User(dto.Username);
+        var user = new User(dto.Username); 
+        this._userRepository.Add(user);
         await this._unitOfWork.SaveChangesAsync();
     }
 

@@ -1,27 +1,24 @@
 ﻿using MBS.Domain.Entities;
 using MBS.Domain.Repositories;
+using MBS.Host.InfrastructureServices;
+using Microsoft.EntityFrameworkCore;
 
 namespace MBS.Host.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    public Task<User> GetByIdAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
+    private readonly AppDbContext _context;
 
-    public Task<User> GetByNameAsync(string name)
+    public UserRepository(AppDbContext context)
     {
-        throw new NotImplementedException();
+        _context = context;
     }
+    
 
-    public Task AddAsync(User user)
+    public void Add(User user)
     {
-        throw new NotImplementedException();
+        _context.Users.Add(user);
+        _context.SaveChanges();
     }
-
-    public Task UpdateAsync(User user)
-    {
-        throw new NotImplementedException();
-    }
+    
 }
