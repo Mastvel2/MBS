@@ -12,22 +12,22 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Username);
         
         // Устанавливаем имя схемы и таблицы
-        builder.ToTable("Users", "public");
+        builder.ToTable("users", "public");
         
         // Определяем свойства
         builder.Property(u => u.Username)
-            .HasColumnName("Username");
+            .HasColumnName("username");
 
         builder.Property(u => u.AboutMe)
-            .HasColumnName("AboutMe");
+            .HasColumnName("about_me");
         
-        builder.Property(u => u.DateOfBirth)
-            .HasColumnName("DateOfBirth");
+        builder.Property(u => u.Status)
+            .HasColumnName("status");
 
         builder.Property(u => u.ProfilePictureUrl)
-            .HasColumnName("ProfilePictureUrl");
+            .HasColumnName("profile_picture_url");
         
-        builder.Property(u => u.LastLogin)
-            .HasColumnName("LastLogin");
+        builder.Property(u => u.LastLoginTime)
+            .HasColumnName("last_login_time");
     }
 }

@@ -2,9 +2,6 @@
 
 public class UserIdentity
 {
-    private string hash;
-    private string salt;
-    
     public UserIdentity(string username, string clearPassword)
     {
         Username = username;
@@ -13,7 +10,7 @@ public class UserIdentity
     
     protected UserIdentity()
     {
-        this.Password = new Password(this.salt, this.hash);
+        
     }
     
     public string Username { get; protected set; }

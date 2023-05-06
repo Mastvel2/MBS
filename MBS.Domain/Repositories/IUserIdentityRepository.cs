@@ -6,6 +6,6 @@ namespace MBS.Domain.Repositories
     {
         Task<UserIdentity> GetByUsernameAsync(string name);
         Task<bool> HasByUsernameAsync(string username);
-        Task Add(UserIdentity userIdentity);
+        void Add(UserIdentity userIdentity);
     }
 }

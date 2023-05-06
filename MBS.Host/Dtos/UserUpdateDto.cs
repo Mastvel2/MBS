@@ -1,13 +1,7 @@
-﻿namespace MBS.Domain.Entities;
+﻿namespace MBS.Host.Dtos;
 
-public class User
+public class UserUpdateDto
 {
-
-    public User(string username)
-    {
-        this.Username = username;
-    }
-    
     public string Username { get; set; }
 
     public string AboutMe { get; set; }
@@ -15,6 +9,6 @@ public class User
     public string ProfilePictureUrl { get; set; }
 
     public DateTime LastLoginTime { get; set; }
-    
+
     public string Status { get; set; }
 }

@@ -7,18 +7,25 @@ namespace MBS.Host.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext context;
 
     public UserRepository(AppDbContext context)
     {
-        _context = context;
+        this.context = context;
     }
-    
 
+    public async Task<User> GetByUsernameAsync(string username)
+    {
+        return await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+    }
     public void Add(User user)
     {
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        context.Users.Add(user);
+        context.SaveChanges();
     }
-    
+    public void Update(User user)
+    {
+        context.Users.Update(user);
+    }
+
 }

@@ -10,15 +10,22 @@ public class UserIdentityConfiguration : IEntityTypeConfiguration<UserIdentity>
     {
         // Устанавливаем первичный ключ
         builder.HasKey(ui => ui.Username);
+
         // Устанавливаем имя схемы и таблицы
-        builder.ToTable("UserIdentities", "public");
-        
-        builder.Property(ui => ui.Username);
-        // Маппим приватные поля hash и salt для EF Core
-        builder.Property<string>("hash")
-            .HasColumnName("Hash");
-        builder.Property<string>("salt")
-            .HasColumnName("Salt");
+        builder.ToTable("user_identities", "public");
+
+        builder.Property(ui => ui.Username).HasColumnName("username");
+
+        builder.OwnsOne(ui => ui.Password,
+            b =>
+            {
+                // Маппим приватные поля hash и salt для EF Core
+                b.Property<string>("hash")
+                    .IsRequired()
+                    .HasColumnName("hash");
+                b.Property<string>("salt")
+                    .IsRequired()
+                    .HasColumnName("salt");
+            });
     }
 }
-

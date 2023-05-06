@@ -7,25 +7,27 @@ namespace MBS.Host.Repositories;
 
 public class UserIdentityRepository : IUserIdentityRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AppDbContext context;
 
     public UserIdentityRepository(AppDbContext context)
     {
-        this._context = context ?? throw new ArgumentNullException(nameof(context));
+        this.context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<UserIdentity> GetByUsernameAsync(string username)
+    public Task<UserIdentity> GetByUsernameAsync(string username)
     {
-        return await this._context.UserIdentities.SingleOrDefaultAsync(identity => identity.Username == username);
+        return this.context.UserIdentities
+            .SingleOrDefaultAsync(identity => identity.Username == username);
     }
 
     public Task<bool> HasByUsernameAsync(string username)
     {
-        return this._context.UserIdentities.AnyAsync(identity => identity.Username == username);
+        return this.context.UserIdentities
+            .AnyAsync(identity => identity.Username == username);
     }
 
-    public async Task Add(UserIdentity userIdentity)
+    public void Add(UserIdentity userIdentity)
     {
-        await _context.UserIdentities.AddAsync(userIdentity);
+        this.context.UserIdentities.Add(userIdentity);
     }
 }

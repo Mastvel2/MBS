@@ -9,12 +9,12 @@ namespace MBS.Host.Controllers
     // Класс контроллера для работы с аккаунтами пользователей
     public class AccountController : ControllerBase
     {
-        private readonly IUserIdentityService _userIdentityService;
+        private readonly IUserIdentityService userIdentityService;
 
         // Конструктор, принимает сервис IUserIdentityService
         public AccountController(IUserIdentityService userIdentityService)
         {
-            _userIdentityService = userIdentityService ?? throw new ArgumentNullException(nameof(userIdentityService));
+            this.userIdentityService = userIdentityService ?? throw new ArgumentNullException(nameof(userIdentityService));
         }
 
         // Метод для регистрации пользователя
@@ -24,7 +24,7 @@ namespace MBS.Host.Controllers
             try
             {
                 // Вызываем метод регистрации из сервиса и передаем DTO
-                await _userIdentityService.RegisterAsync(userRegistrationDto);
+                await userIdentityService.RegisterAsync(userRegistrationDto);
                 // В случае успеха возвращаем статус 200 (OK) и сообщение
                 return Ok("User successfully registered.");
             }
@@ -37,19 +37,21 @@ namespace MBS.Host.Controllers
 
         // Метод для авторизации пользователя
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] UserAuthorizationDto userAuthorizationDto)
+        public async Task<ActionResult<TokenDto>> Login(
+            [FromBody] UserAuthorizationDto userAuthorizationDto)
         {
             try
             {
                 // Вызываем метод авторизации из сервиса и передаем DTO
-                var tokenDto = await _userIdentityService.AuthorizeAsync(userAuthorizationDto);
+                var tokenDto = await this.userIdentityService
+                    .AuthorizeAsync(userAuthorizationDto);
                 // В случае успеха возвращаем статус 200 (OK) и данные о токене
-                return Ok(tokenDto);
+                return this.Ok(tokenDto);
             }
             catch (Exception ex)
             {
                 // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
-                return BadRequest(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
     }
