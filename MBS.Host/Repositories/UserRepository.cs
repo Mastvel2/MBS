@@ -18,14 +18,27 @@ public class UserRepository : IUserRepository
     {
         return await context.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
+
     public void Add(User user)
     {
         context.Users.Add(user);
         context.SaveChanges();
     }
+
     public void Update(User user)
     {
         context.Users.Update(user);
     }
 
+    public async Task<IEnumerable<User>> SearchUsersAsync(string searchTerm, string currentUsername)
+    {
+        return await context.Users
+            .Where(u => u.Username.Contains(searchTerm) && u.Username != currentUsername)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<User>> GetAllAsync()
+    {
+        return await context.Users.ToListAsync();
+    }
 }

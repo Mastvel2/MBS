@@ -29,6 +29,23 @@ public class UserService:IUserService
         await unitOfWork.SaveChangesAsync();
     }
 
+    public async Task UpdateUserAvatarAsync(string username, IFormFile avatarFile)
+    {
+        var user = await userRepository.GetByUsernameAsync(username);
+        if (user == null)
+        {
+            throw new Exception("User not found.");
+        }
+
+        // Загрузите файл на сервер и получите URL-адрес сохраненного файла
+        //string newAvatarUrl = await UploadFileAndGetUrl(avatarFile);
+
+        // Обновите URL-адрес аватара пользователя и сохраните изменения в базе данных
+        //user.ProfilePictureUrl = newAvatarUrl;
+        userRepository.Update(user);
+        await unitOfWork.SaveChangesAsync();
+    }
+
     public async Task UpdateUserAsync(string username, UserUpdateDto userUpdateDto)
     {
         var user = await userRepository.GetByUsernameAsync(username);
@@ -42,6 +59,7 @@ public class UserService:IUserService
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync();
     }
+
 
     public async Task<User> GetUserAsync(string username)
     {
