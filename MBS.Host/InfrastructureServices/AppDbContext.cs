@@ -18,5 +18,6 @@ public class AppDbContext : DbContext
     {
         modelBuilder.ApplyConfiguration(new UserIdentityConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new MessageConfiguration());
     }
 }

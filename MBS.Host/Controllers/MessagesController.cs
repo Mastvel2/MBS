@@ -1,45 +1,49 @@
-﻿/*using Microsoft.AspNetCore.Authorization;
+﻿using MBS.Domain.Entities;
+using MBS.Host.ApplicationServices;
 using Microsoft.AspNetCore.Mvc;
-using MBS.Host.Dtos;
-using MBS.Domain.Entities;
-using MBS.Domain.Services;
 
-[Authorize]
+namespace MBS.Host.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
-public class MessagesController : ControllerBase
+public class MessageController : ControllerBase
 {
-    private readonly IMessageService _messageService;
-    private readonly IUserService _userService;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMessageService messageService;
 
-    public MessagesController(IMessageService messageService, IUserService userService, IUnitOfWork unitOfWork)
+    public MessageController(IMessageService messageService)
     {
-        _messageService = messageService;
-        _userService = userService;
-        _unitOfWork = unitOfWork;
+        this.messageService = messageService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<IEnumerable<MessageDto>>> GetMessages()
+    // Получить все сообщения между пользователями
+    [HttpGet("messages/{user1}/{user2}")]
+    public async Task<ActionResult<IEnumerable<Message>>> GetMessagesAsync(string user1, string user2)
     {
-        // Реализуйте логику получения списка сообщений для текущего пользователя
-        int userId = int.Parse(User.Identity.Name);
-        var messages = await _messageService.GetMessagesForUserAsync(userId);
-
+        var messages = await messageService.GetMessagesAsync(user1, user2);
         return Ok(messages);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> SendMessage([FromBody] Message message)
+    // Получить последнее сообщение между пользователями
+    [HttpGet("latest-message/{user1}/{user2}")]
+    public async Task<ActionResult<Message>> GetLatestMessageAsync(string user1, string user2)
     {
-        // Получаем идентификатор текущего пользователя из аутентификационных данных
-        int senderId = int.Parse(User.Identity.Name);
-
-        // Отправляем сообщение от текущего пользователя другому пользователю
-        // и сохраняем его в базе данных в зашифрованном виде
-        var sentMessage = await _messageService.SendMessageAsync(senderId, message.ReceiverId, message.EncryptedText);
-
-        return Ok(sentMessage);
+        var latestMessage = await messageService.GetLatestMessageAsync(user1, user2);
+        return Ok(latestMessage);
     }
-}*/
+
+    // Отправить сообщение
+    [HttpPost("send-message")]
+    public async Task<ActionResult<Message>> SendMessageAsync([FromBody] Message message)
+    {
+        var savedMessage = await messageService.SendMessageAsync(message);
+        return Ok(savedMessage);
+    }
+
+    // Обновить сообщение
+    [HttpPut("update-message/{messageId}")]
+    public async Task<IActionResult> UpdateMessageAsync(int messageId, [FromBody] string updatedText)
+    {
+        await messageService.UpdateMessageAsync(messageId, updatedText);
+        return NoContent();
+    }
+}

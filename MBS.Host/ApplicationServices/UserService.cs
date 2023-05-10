@@ -9,11 +9,13 @@ public class UserService:IUserService
 {
     private readonly IUserRepository userRepository;
     private readonly IUnitOfWork unitOfWork;
+    private readonly IWebHostEnvironment webHostEnvironment;
 
-    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
     {
         this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        this.webHostEnvironment = webHostEnvironment;
     }
 
     public async Task UpdateUserAvatarAsync(string username, string avatarUrl)
@@ -38,12 +40,31 @@ public class UserService:IUserService
         }
 
         // Загрузите файл на сервер и получите URL-адрес сохраненного файла
-        //string newAvatarUrl = await UploadFileAndGetUrl(avatarFile);
+        string newAvatarUrl = await UploadFileAndGetUrl(avatarFile);
 
         // Обновите URL-адрес аватара пользователя и сохраните изменения в базе данных
-        //user.ProfilePictureUrl = newAvatarUrl;
+        user.ProfilePictureUrl = newAvatarUrl;
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync();
+    }
+
+    private async Task<string> UploadFileAndGetUrl(IFormFile file)
+    {
+        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        string uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "avatars");
+
+        if (!Directory.Exists(uploadFolder))
+        {
+            Directory.CreateDirectory(uploadFolder);
+        }
+
+        string filePath = Path.Combine(uploadFolder, fileName);
+
+        await using var fileStream = new FileStream(filePath, FileMode.Create);
+        await file.CopyToAsync(fileStream);
+
+        // Возвращает относительный URL файла
+        return $"/avatars/{fileName}";
     }
 
     public async Task UpdateUserAsync(string username, UserUpdateDto userUpdateDto)
