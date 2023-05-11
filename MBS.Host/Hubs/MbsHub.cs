@@ -5,13 +5,16 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace MBS.Host.Hubs;
 
-public class ChatHub : Hub
+public class MbsHub : Hub
 {
     private readonly IMessageService messageService;
+    private readonly IUserService userService;
 
-    public ChatHub(IMessageService messageService)
+
+    public MbsHub(IMessageService messageService, IUserService userService)
     {
         this.messageService = messageService;
+        this.userService = userService;
     }
 
     public async Task SendMessage(string sender, string receiver, string text)
@@ -37,5 +40,22 @@ public class ChatHub : Hub
     {
         var messages = await messageService.GetMessagesAsync(user1, user2);
         return messages;
+    }
+
+    public override async Task OnConnectedAsync()
+    {
+        string username = Context.User.Identity.Name;
+
+        await userService.UpdateStatus(username, "online");
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception exception)
+    {
+        string username = Context.User.Identity.Name;
+
+        await userService.UpdateStatus(username, "offline");
+        await userService.UpdateLastLoginTime(username, DateTime.UtcNow);
+        await base.OnDisconnectedAsync(exception);
     }
 }

@@ -18,19 +18,6 @@ public class UserService:IUserService
         this.webHostEnvironment = webHostEnvironment;
     }
 
-    public async Task UpdateUserAvatarAsync(string username, string avatarUrl)
-    {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
-        {
-            throw new Exception($"Пользователь с логином {username} не найден.");
-        }
-
-        user.ProfilePictureUrl = avatarUrl;
-        userRepository.Add(user);
-        await unitOfWork.SaveChangesAsync();
-    }
-
     public async Task UpdateUserAvatarAsync(string username, IFormFile avatarFile)
     {
         var user = await userRepository.GetByUsernameAsync(username);
@@ -39,18 +26,16 @@ public class UserService:IUserService
             throw new Exception("User not found.");
         }
 
-        // Загрузите файл на сервер и получите URL-адрес сохраненного файла
-        string newAvatarUrl = await UploadFileAndGetUrl(avatarFile);
+        string newAvatarUrl = await UploadFileAndGetUrl(username, avatarFile);
 
-        // Обновите URL-адрес аватара пользователя и сохраните изменения в базе данных
         user.ProfilePictureUrl = newAvatarUrl;
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync();
     }
 
-    private async Task<string> UploadFileAndGetUrl(IFormFile file)
+    private async Task<string> UploadFileAndGetUrl(string username, IFormFile file)
     {
-        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        string fileName = $"{username}{Path.GetExtension(file.FileName)}";
         string uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "avatars");
 
         if (!Directory.Exists(uploadFolder))
@@ -60,10 +45,16 @@ public class UserService:IUserService
 
         string filePath = Path.Combine(uploadFolder, fileName);
 
-        await using var fileStream = new FileStream(filePath, FileMode.Create);
+        // Overwrite the existing file
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+
+        await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
         await file.CopyToAsync(fileStream);
 
-        // Возвращает относительный URL файла
+        // Return the relative URL of the file
         return $"/avatars/{fileName}";
     }
 
@@ -91,5 +82,30 @@ public class UserService:IUserService
         }
 
         return user;
+    }
+    public async Task UpdateStatus(string username, string status)
+    {
+        var user = await userRepository.GetByUsernameAsync(username);
+        if (user == null)
+        {
+            throw new Exception($"Пользователь с логином {username} не найден.");
+        }
+
+        user.Status = status;
+        userRepository.Update(user);
+        await unitOfWork.SaveChangesAsync();
+    }
+
+    public async Task UpdateLastLoginTime(string username, DateTime lastLoginTime)
+    {
+        var user = await userRepository.GetByUsernameAsync(username);
+        if (user == null)
+        {
+            throw new Exception($"Пользователь с логином {username} не найден.");
+        }
+
+        user.LastLoginTime = lastLoginTime;
+        userRepository.Update(user);
+        await unitOfWork.SaveChangesAsync();
     }
 }

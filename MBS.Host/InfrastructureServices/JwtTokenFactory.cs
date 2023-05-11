@@ -18,7 +18,6 @@ public class JwtTokenFactory : ITokenFactory
         this.expirationMinutes = jwtSettings.Value.ExpirationMinutes;
     }
 
-
     public string Create(string username)
     {
         var tokenHandler = new JwtSecurityTokenHandler(); // Создаем обработчик токенов

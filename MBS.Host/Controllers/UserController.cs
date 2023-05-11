@@ -21,10 +21,11 @@ public class UserController : ControllerBase
         var user = await userService.GetUserAsync(username);
         if (user == null)
         {
-            return NotFound("User not found.");
+            return NotFound("Пользователь не найден.");
         }
         return Ok(user);
     }
+
 
     [HttpPut("{username}")]
     public async Task<IActionResult> UpdateUser(string username,
@@ -33,7 +34,7 @@ public class UserController : ControllerBase
         try
         {
             await userService.UpdateUserAsync(username, updateUserDto);
-            return Ok("User information updated successfully.");
+            return Ok("Информация успешно обновлена.");
         }
         catch (Exception ex)
         {
@@ -46,8 +47,35 @@ public class UserController : ControllerBase
     {
         try
         {
-            // await userService.UpdateUserAvatarAsync(username, avatarFile);
-            return Ok("User avatar updated successfully.");
+            await userService.UpdateUserAvatarAsync(username, avatarFile);
+            return Ok("Аватар пользовтеля успешно обновлён.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    [HttpPut("{username}/status")]
+    public async Task<IActionResult> UpdateUserStatus(string username, [FromBody] string status)
+    {
+        try
+        {
+            await userService.UpdateStatus(username, status);
+            return Ok("User status updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("{username}/last-login-time")]
+    public async Task<IActionResult> UpdateLastLoginTime(string username, [FromBody] DateTime lastLoginTime)
+    {
+        try
+        {
+            await userService.UpdateLastLoginTime(username, lastLoginTime);
+            return Ok("User last login time updated successfully.");
         }
         catch (Exception ex)
         {
