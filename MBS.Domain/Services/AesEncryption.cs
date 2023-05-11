@@ -2,67 +2,62 @@
 
 namespace MBS.Domain.Services;
 
-public class AesEncryption
+public static class AesEncryption
 {
-    private static readonly int KeySize = 256;
-    private static readonly int BlockSize = 128;
-    private static readonly string EncryptionKey = "YourEncryptionKey";
+    private const int KeySize = 256;
+    private const int BlockSize = 128;
 
     public static string Encrypt(string plainText)
     {
-        using (var aes = Aes.Create())
+        using var aes = Aes.Create();
+        aes.KeySize = KeySize;
+        aes.BlockSize = BlockSize;
+
+        using (var rng = RandomNumberGenerator.Create())
         {
-            aes.KeySize = KeySize;
-            aes.BlockSize = BlockSize;
+            aes.Key = new byte[KeySize / 8];
+            rng.GetBytes(aes.Key);
+            aes.IV = new byte[BlockSize / 8];
+            rng.GetBytes(aes.IV);
+        }
 
-            using (var rng = RandomNumberGenerator.Create())
+        using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
+        {
+            using (var msEncrypt = new MemoryStream())
             {
-                aes.Key = new byte[KeySize / 8];
-                rng.GetBytes(aes.Key);
-                aes.IV = new byte[BlockSize / 8];
-                rng.GetBytes(aes.IV);
-            }
-
-            using (var encryptor = aes.CreateEncryptor(aes.Key, aes.IV))
-            {
-                using (var msEncrypt = new MemoryStream())
+                using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                using (var swEncrypt = new StreamWriter(csEncrypt))
                 {
-                    using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    using (var swEncrypt = new StreamWriter(csEncrypt))
-                    {
-                        swEncrypt.Write(plainText);
-                    }
-
-                    return Convert.ToBase64String(msEncrypt.ToArray());
+                    swEncrypt.Write(plainText);
                 }
+
+                return Convert.ToBase64String(msEncrypt.ToArray());
             }
         }
     }
 
     public static string Decrypt(string encryptedText)
     {
-        using (var aes = Aes.Create())
+        using var aes = Aes.Create();
+        aes.KeySize = KeySize;
+        aes.BlockSize = BlockSize;
+
+        using (var rng = RandomNumberGenerator.Create())
         {
-            aes.KeySize = KeySize;
-            aes.BlockSize = BlockSize;
+            aes.Key = new byte[KeySize / 8];
+            rng.GetBytes(aes.Key);
+            aes.IV = new byte[BlockSize / 8];
+            rng.GetBytes(aes.IV);
+        }
 
-            using (var rng = RandomNumberGenerator.Create())
+        using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
+        {
+            using (var msDecrypt = new MemoryStream(Convert.FromBase64String(encryptedText)))
             {
-                aes.Key = new byte[KeySize / 8];
-                rng.GetBytes(aes.Key);
-                aes.IV = new byte[BlockSize / 8];
-                rng.GetBytes(aes.IV);
-            }
-
-            using (var decryptor = aes.CreateDecryptor(aes.Key, aes.IV))
-            {
-                using (var msDecrypt = new MemoryStream(Convert.FromBase64String(encryptedText)))
+                using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                using (var srDecrypt = new StreamReader(csDecrypt))
                 {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    using (var srDecrypt = new StreamReader(csDecrypt))
-                    {
-                        return srDecrypt.ReadToEnd();
-                    }
+                    return srDecrypt.ReadToEnd();
                 }
             }
         }

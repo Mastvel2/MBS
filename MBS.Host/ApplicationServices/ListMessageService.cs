@@ -3,7 +3,7 @@ using MBS.Domain.Repositories;
 
 namespace MBS.Host.ApplicationServices;
 
-public class ListMessageService: IListMessageService
+public class ListMessageService
 {
 
     private readonly IUserRepository userRepository;

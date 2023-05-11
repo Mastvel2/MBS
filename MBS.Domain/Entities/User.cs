@@ -7,14 +7,11 @@ public class User
     {
         this.Username = username;
     }
-    
-    public string Username { get; set; }
+
+    public string Username { get; protected set; }
 
     public string AboutMe { get; set; }
 
-    public string ProfilePictureUrl { get; set; }
+    public DateTime LastActiveTime { get; set; }
 
-    public DateTime LastLoginTime { get; set; }
-    
-    public string Status { get; set; }
 }

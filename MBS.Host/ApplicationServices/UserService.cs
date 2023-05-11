@@ -2,6 +2,7 @@ using MBS.Domain.Entities;
 using MBS.Domain.Repositories;
 using MBS.Domain.Services;
 using MBS.Host.Dtos;
+using MBS.Host.Providers;
 
 namespace MBS.Host.ApplicationServices;
 
@@ -10,52 +11,36 @@ public class UserService:IUserService
     private readonly IUserRepository userRepository;
     private readonly IUnitOfWork unitOfWork;
     private readonly IWebHostEnvironment webHostEnvironment;
+    private readonly IUserStatusProvider userStatusProvider;
 
-    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, IUserStatusProvider userStatusProvider)
     {
         this.userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
         this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        this.webHostEnvironment = webHostEnvironment;
+        this.webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
+        this.userStatusProvider = userStatusProvider ?? throw new ArgumentNullException(nameof(userStatusProvider));
     }
 
-    public async Task UpdateUserAvatarAsync(string username, IFormFile avatarFile)
+    public async Task<IEnumerable<UserDto>> GetAvailableUsersAsync(string currentUser)
+    {
+        if (string.IsNullOrWhiteSpace(currentUser))
+        {
+            throw new ArgumentException("Требуется текущий пользователь.");
+        }
+
+        var users = await userRepository.GetAllAsync();
+        return users.Where(u => u.Username != currentUser).Select(this.GetUserDto);
+    }
+
+    public async Task<UserDto> GetUserAsync(string username)
     {
         var user = await userRepository.GetByUsernameAsync(username);
         if (user == null)
         {
-            throw new Exception("User not found.");
+            throw new Exception($"Пользователь с логином {username} не найден.");
         }
 
-        string newAvatarUrl = await UploadFileAndGetUrl(username, avatarFile);
-
-        user.ProfilePictureUrl = newAvatarUrl;
-        userRepository.Update(user);
-        await unitOfWork.SaveChangesAsync();
-    }
-
-    private async Task<string> UploadFileAndGetUrl(string username, IFormFile file)
-    {
-        string fileName = $"{username}{Path.GetExtension(file.FileName)}";
-        string uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "avatars");
-
-        if (!Directory.Exists(uploadFolder))
-        {
-            Directory.CreateDirectory(uploadFolder);
-        }
-
-        string filePath = Path.Combine(uploadFolder, fileName);
-
-        // Overwrite the existing file
-        if (File.Exists(filePath))
-        {
-            File.Delete(filePath);
-        }
-
-        await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
-        await file.CopyToAsync(fileStream);
-
-        // Return the relative URL of the file
-        return $"/avatars/{fileName}";
+        return this.GetUserDto(user);
     }
 
     public async Task UpdateUserAsync(string username, UserUpdateDto userUpdateDto)
@@ -67,13 +52,22 @@ public class UserService:IUserService
         }
 
         user.AboutMe = userUpdateDto.AboutMe;
-        user.Status = userUpdateDto.Status;
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync();
     }
 
+    public async Task UpdateUserAvatarAsync(string username, IFormFile avatarFile)
+    {
+        var user = await userRepository.GetByUsernameAsync(username);
+        if (user == null)
+        {
+            throw new Exception("Пользователь не найден.");
+        }
 
-    public async Task<User> GetUserAsync(string username)
+        await UploadFile(username, avatarFile);
+    }
+
+    public async Task UpdateLastActiveTime(string username, DateTime lastActiveTime)
     {
         var user = await userRepository.GetByUsernameAsync(username);
         if (user == null)
@@ -81,31 +75,45 @@ public class UserService:IUserService
             throw new Exception($"Пользователь с логином {username} не найден.");
         }
 
-        return user;
-    }
-    public async Task UpdateStatus(string username, string status)
-    {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
-        {
-            throw new Exception($"Пользователь с логином {username} не найден.");
-        }
-
-        user.Status = status;
+        user.LastActiveTime = lastActiveTime;
         userRepository.Update(user);
         await unitOfWork.SaveChangesAsync();
     }
 
-    public async Task UpdateLastLoginTime(string username, DateTime lastLoginTime)
+    public void UpdateStatus(string username)
     {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
+        this.userStatusProvider.UpdateStatus(username);
+    }
+
+    private UserDto GetUserDto(User user)
+    {
+        return new UserDto
         {
-            throw new Exception($"Пользователь с логином {username} не найден.");
+            Username = user.Username,
+            AboutMe = user.AboutMe,
+            Status = this.userStatusProvider.GetStatus(user.Username),
+        };
+    }
+
+    private async Task UploadFile(string username, IFormFile file)
+    {
+        var fileName = $"{username}{Path.GetExtension(file.FileName)}";
+        var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "avatars");
+
+        if (!Directory.Exists(uploadFolder))
+        {
+            Directory.CreateDirectory(uploadFolder);
         }
 
-        user.LastLoginTime = lastLoginTime;
-        userRepository.Update(user);
-        await unitOfWork.SaveChangesAsync();
+        var filePath = Path.Combine(uploadFolder, fileName);
+
+        // Overwrite the existing file
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+
+        await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
+        await file.CopyToAsync(fileStream);
     }
 }

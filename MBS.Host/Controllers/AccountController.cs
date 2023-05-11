@@ -1,5 +1,6 @@
 ﻿using MBS.Host.ApplicationServices;
 using MBS.Host.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MBS.Host.Controllers
@@ -19,6 +20,7 @@ namespace MBS.Host.Controllers
 
         // Метод для регистрации пользователя
         [HttpPost("register")]
+        [Authorize]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto userRegistrationDto)
         {
             try

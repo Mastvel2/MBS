@@ -1,11 +1,13 @@
 using MBS.Host.ApplicationServices;
 using MBS.Host.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MBS.Host.Controllers;
 
-[Route("api/[controller]")]
+[Route("api")]
 [ApiController]
+[Authorize]
 public class UserController : ControllerBase
 {
     private readonly IUserService userService;
@@ -15,8 +17,16 @@ public class UserController : ControllerBase
         this.userService = userService;
     }
 
-    [HttpGet("{username}")]
-    public async Task<IActionResult> GetUser(string username)
+    [HttpGet("users/available")]
+    public async Task<ActionResult<IEnumerable<UserDto>>> GetAvailableUsers()
+    {
+        var username = this.User.Identity!.Name;
+        var users = await userService.GetAvailableUsersAsync(username);
+        return Ok(users);
+    }
+
+    [HttpGet("users/current")]
+    public async Task<IActionResult> GetCurrentUser(string username)
     {
         var user = await userService.GetUserAsync(username);
         if (user == null)
@@ -27,14 +37,15 @@ public class UserController : ControllerBase
     }
 
 
-    [HttpPut("{username}")]
-    public async Task<IActionResult> UpdateUser(string username,
+    [HttpPut("user")]
+    public async Task<IActionResult> UpdateUser(
         [FromBody] UserUpdateDto updateUserDto)
     {
+        var username = this.User.Identity!.Name;
         try
         {
             await userService.UpdateUserAsync(username, updateUserDto);
-            return Ok("Информация успешно обновлена.");
+            return Ok();
         }
         catch (Exception ex)
         {
@@ -42,40 +53,15 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpPut("{username}/avatar")]
-    public async Task<IActionResult> UpdateUserAvatar(string username, [FromForm] IFormFile avatarFile)
+    [HttpPost("user/avatar")]
+    public async Task<IActionResult> UpdateUserAvatar(
+        [FromForm] IFormFile avatarFile)
     {
+        var username = this.User.Identity!.Name;
         try
         {
             await userService.UpdateUserAvatarAsync(username, avatarFile);
-            return Ok("Аватар пользовтеля успешно обновлён.");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-    [HttpPut("{username}/status")]
-    public async Task<IActionResult> UpdateUserStatus(string username, [FromBody] string status)
-    {
-        try
-        {
-            await userService.UpdateStatus(username, status);
-            return Ok("User status updated successfully.");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
-    }
-
-    [HttpPut("{username}/last-login-time")]
-    public async Task<IActionResult> UpdateLastLoginTime(string username, [FromBody] DateTime lastLoginTime)
-    {
-        try
-        {
-            await userService.UpdateLastLoginTime(username, lastLoginTime);
-            return Ok("User last login time updated successfully.");
+            return Ok();
         }
         catch (Exception ex)
         {

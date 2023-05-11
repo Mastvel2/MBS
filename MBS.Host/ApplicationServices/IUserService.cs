@@ -5,10 +5,11 @@ namespace MBS.Host.ApplicationServices;
 
 public interface IUserService
 {
-    Task UpdateUserAvatarAsync(string username, IFormFile avatarFile);
+    Task<IEnumerable<UserDto>> GetAvailableUsersAsync(string currentUser);
+    Task<UserDto> GetUserAsync(string username);
     Task UpdateUserAsync(string username, UserUpdateDto userUpdateDto);
-    Task<User> GetUserAsync(string username);
-    Task UpdateLastLoginTime(string username, DateTime lastLoginTime);
-    Task UpdateStatus(string username, string status);
+    Task UpdateUserAvatarAsync(string username, IFormFile avatarFile);
+    Task UpdateLastActiveTime(string username, DateTime lastActiveTime);
+    void UpdateStatus(string username);
 
 }

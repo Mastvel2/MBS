@@ -63,15 +63,15 @@ public class MessageService : IMessageService
 
     public async Task<string> UploadFileAsync(IFormFile file)
     {
-        string fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-        string uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
+        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "uploads");
 
         if (!Directory.Exists(uploadFolder))
         {
             Directory.CreateDirectory(uploadFolder);
         }
 
-        string filePath = Path.Combine(uploadFolder, fileName);
+        var filePath = Path.Combine(uploadFolder, fileName);
 
         await using var fileStream = new FileStream(filePath, FileMode.Create);
         await file.CopyToAsync(fileStream);
@@ -81,7 +81,7 @@ public class MessageService : IMessageService
 
     public async Task<byte[]> DownloadFileAsync(string fileName)
     {
-        string filePath = Path.Combine(webHostEnvironment.WebRootPath, "uploads", fileName);
+        var filePath = Path.Combine(webHostEnvironment.WebRootPath, "uploads", fileName);
 
         if (File.Exists(filePath))
         {
