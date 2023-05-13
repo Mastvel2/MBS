@@ -2,5 +2,5 @@ namespace MBS.Host.InfrastructureServices;
 
 public interface ITokenFactory
 {
-    string Create(string username);
+    string Create(string username, bool isAdmin);
 }

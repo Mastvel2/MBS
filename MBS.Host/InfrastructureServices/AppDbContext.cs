@@ -1,4 +1,5 @@
 ﻿using MBS.Domain.Entities;
+using MBS.Host.EntityConfigurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace MBS.Host.InfrastructureServices;

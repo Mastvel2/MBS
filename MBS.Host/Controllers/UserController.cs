@@ -55,12 +55,13 @@ public class UserController : ControllerBase
 
     [HttpPost("user/avatar")]
     public async Task<IActionResult> UpdateUserAvatar(
-        [FromForm] IFormFile avatarFile)
+        [FromForm] IFormCollection formCollection)
     {
         var username = this.User.Identity!.Name;
         try
         {
-            await userService.UpdateUserAvatarAsync(username, avatarFile);
+            var file = formCollection.Files.Single();
+            await userService.UpdateUserAvatarAsync(username, file);
             return Ok();
         }
         catch (Exception ex)

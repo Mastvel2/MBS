@@ -53,7 +53,7 @@ public class UserIdentityService : IUserIdentityService
 
         return new TokenDto
         {
-            Token = this.tokenFactory.Create(userIdentity.Username)
+            Token = this.tokenFactory.Create(userIdentity.Username, userIdentity.IsAdmin)
         };
     }
 }

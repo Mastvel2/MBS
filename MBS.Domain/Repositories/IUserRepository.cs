@@ -4,9 +4,11 @@ namespace MBS.Domain.Repositories;
 
 public interface IUserRepository
 {
+    IAsyncEnumerable<User> GetAllAsync();
+    IAsyncEnumerable<User> SearchUsersAsync(string searchTerm, string currentUsername);
+    IAsyncEnumerable<User> GetByUsernamesAsync(IEnumerable<string> usernames);
+    Task<User> GetByUsernameAsync(string username);
     void Add(User user);
-    public Task<User> GetByUsernameAsync(string username);
-    public void Update(User user);
-    public Task<IEnumerable<User>> SearchUsersAsync(string searchTerm, string currentUsername);
-    public Task<IEnumerable<User>> GetAllAsync();
+    void Update(User user);
+
 }

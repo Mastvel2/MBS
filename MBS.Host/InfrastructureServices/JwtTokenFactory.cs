@@ -18,7 +18,7 @@ public class JwtTokenFactory : ITokenFactory
         this.expirationMinutes = jwtSettings.Value.ExpirationMinutes;
     }
 
-    public string Create(string username)
+    public string Create(string username, bool isAdmin)
     {
         var tokenHandler = new JwtSecurityTokenHandler(); // Создаем обработчик токенов
         var key = Encoding.ASCII.GetBytes(this.secretKey); // Конвертируем секретный ключ в байты
@@ -29,7 +29,11 @@ public class JwtTokenFactory : ITokenFactory
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             // Устанавливаем имя пользователя в виде утверждения
-            Subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, username) }),
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, username),
+                new Claim(ClaimTypes.Role, isAdmin ? "admin" : "user")
+            }),
             Expires = now.AddMinutes(this.expirationMinutes), // Устанавливаем срок действия токена
             NotBefore = now, // Устанавливаем время начала действия токена
             // Устанавливаем алгоритм подписи и ключ

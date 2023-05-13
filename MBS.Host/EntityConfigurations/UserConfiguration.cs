@@ -2,7 +2,7 @@ using MBS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MBS.Host.InfrastructureServices;
+namespace MBS.Host.EntityConfigurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
@@ -21,7 +21,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.AboutMe)
             .HasColumnName("about_me");
 
-        builder.Property(u => u.LastActiveTime)
-            .HasColumnName("last_login_time");
+        builder.Property(u => u.LastActivityTime)
+            .HasColumnName("last_activity_time");
     }
 }

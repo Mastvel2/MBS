@@ -2,7 +2,6 @@
 
 public class User
 {
-
     public User(string username)
     {
         this.Username = username;
@@ -12,6 +11,5 @@ public class User
 
     public string AboutMe { get; set; }
 
-    public DateTime LastActiveTime { get; set; }
-
+    public DateTime? LastActivityTime { get; set; }
 }

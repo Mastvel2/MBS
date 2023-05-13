@@ -20,7 +20,7 @@ namespace MBS.Host.Controllers
 
         // Метод для регистрации пользователя
         [HttpPost("register")]
-        [Authorize]
+        [Authorize("create_user")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto userRegistrationDto)
         {
             try
@@ -28,7 +28,7 @@ namespace MBS.Host.Controllers
                 // Вызываем метод регистрации из сервиса и передаем DTO
                 await userIdentityService.RegisterAsync(userRegistrationDto);
                 // В случае успеха возвращаем статус 200 (OK) и сообщение
-                return Ok("User successfully registered.");
+                return Ok();
             }
             catch (Exception ex)
             {

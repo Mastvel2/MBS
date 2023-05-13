@@ -2,7 +2,7 @@ using MBS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MBS.Host.InfrastructureServices;
+namespace MBS.Host.EntityConfigurations;
 
 public class UserIdentityConfiguration : IEntityTypeConfiguration<UserIdentity>
 {
@@ -15,6 +15,8 @@ public class UserIdentityConfiguration : IEntityTypeConfiguration<UserIdentity>
         builder.ToTable("user_identities", "public");
 
         builder.Property(ui => ui.Username).HasColumnName("username");
+
+        builder.Property(ui => ui.IsAdmin).HasColumnName("is_admin");
 
         builder.OwnsOne(ui => ui.Password,
             b =>

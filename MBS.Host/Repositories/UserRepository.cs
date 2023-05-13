@@ -14,15 +14,32 @@ public class UserRepository : IUserRepository
         this.context = context;
     }
 
-    public async Task<User> GetByUsernameAsync(string username)
+    public IAsyncEnumerable<User> GetAllAsync()
     {
-        return await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        return context.Users.AsAsyncEnumerable();
+    }
+
+    public IAsyncEnumerable<User> SearchUsersAsync(string searchTerm, string currentUsername)
+    {
+        return context.Users
+            .Where(u => u.Username.Contains(searchTerm) && u.Username != currentUsername)
+            .AsAsyncEnumerable();
+    }
+
+    public IAsyncEnumerable<User> GetByUsernamesAsync(IEnumerable<string> usernames)
+    {
+        return context.Users
+            .Where(u => usernames.Contains(u.Username)).AsAsyncEnumerable();
+    }
+
+    public Task<User> GetByUsernameAsync(string username)
+    {
+        return context.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
 
     public void Add(User user)
     {
         context.Users.Add(user);
-        context.SaveChanges();
     }
 
     public void Update(User user)
@@ -30,15 +47,4 @@ public class UserRepository : IUserRepository
         context.Users.Update(user);
     }
 
-    public async Task<IEnumerable<User>> SearchUsersAsync(string searchTerm, string currentUsername)
-    {
-        return await context.Users
-            .Where(u => u.Username.Contains(searchTerm) && u.Username != currentUsername)
-            .ToListAsync();
-    }
-
-    public async Task<IEnumerable<User>> GetAllAsync()
-    {
-        return await context.Users.ToListAsync();
-    }
 }

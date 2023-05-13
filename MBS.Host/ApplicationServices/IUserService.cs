@@ -9,7 +9,7 @@ public interface IUserService
     Task<UserDto> GetUserAsync(string username);
     Task UpdateUserAsync(string username, UserUpdateDto userUpdateDto);
     Task UpdateUserAvatarAsync(string username, IFormFile avatarFile);
-    Task UpdateLastActiveTime(string username, DateTime lastActiveTime);
+    Task UpdateLastActiveTimesAsync();
     void UpdateStatus(string username);
 
 }

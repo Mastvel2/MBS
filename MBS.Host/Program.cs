@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builderP =>
     {
-        builderP.WithOrigins("http://localhost:3000")
+        builderP.WithOrigins("http://25.49.104.27:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -38,12 +38,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero,
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("create_user", configure => configure.RequireRole("admin"));
+});
 builder.Services.AddControllers().AddJsonOptions(configure =>
 {
     configure.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -58,6 +62,7 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
 builder.Services.AddSingleton<IUserStatusProvider, UserStatusProvider>();
+builder.Services.AddHostedService<UserActivityBackgroundService>();
 
 var app = builder.Build();
 

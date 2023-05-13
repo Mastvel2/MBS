@@ -1,6 +1,7 @@
 using MBS.Domain.Entities;
 using MBS.Domain.Repositories;
 using MBS.Domain.Services;
+using MBS.Host.Dtos;
 
 namespace MBS.Host.ApplicationServices;
 
@@ -91,5 +92,17 @@ public class MessageService : IMessageService
         {
             throw new FileNotFoundException($"Файл с именем {fileName} не найден.");
         }
+    }
+
+    private MessageDto GetMessageDto(Message message)
+    {
+        return new MessageDto
+        {
+            Id = message.Id,
+            Sender = message.Sender,
+            Receiver = message.Receiver,
+            EncryptedText = AesEncryption.Decrypt(message.EncryptedText),
+            Timestamp = message.Timestamp,
+        };
     }
 }

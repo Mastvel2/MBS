@@ -2,7 +2,7 @@ using MBS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace MBS.Host.InfrastructureServices;
+namespace MBS.Host.EntityConfigurations;
 
 public class MessageConfiguration : IEntityTypeConfiguration<Message>
 {

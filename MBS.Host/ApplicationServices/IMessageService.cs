@@ -1,4 +1,5 @@
 using MBS.Domain.Entities;
+using MBS.Host.Dtos;
 
 namespace MBS.Host.ApplicationServices;
 

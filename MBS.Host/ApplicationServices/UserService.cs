@@ -3,6 +3,7 @@ using MBS.Domain.Repositories;
 using MBS.Domain.Services;
 using MBS.Host.Dtos;
 using MBS.Host.Providers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MBS.Host.ApplicationServices;
 
@@ -28,8 +29,9 @@ public class UserService:IUserService
             throw new ArgumentException("Требуется текущий пользователь.");
         }
 
-        var users = await userRepository.GetAllAsync();
-        return users.Where(u => u.Username != currentUser).Select(this.GetUserDto);
+        var users = userRepository.GetAllAsync();
+        return await users.Where(u => u.Username != currentUser)
+            .Select(this.GetUserDto).ToListAsync();
     }
 
     public async Task<UserDto> GetUserAsync(string username)
@@ -67,16 +69,16 @@ public class UserService:IUserService
         await UploadFile(username, avatarFile);
     }
 
-    public async Task UpdateLastActiveTime(string username, DateTime lastActiveTime)
+    public async Task UpdateLastActiveTimesAsync()
     {
-        var user = await userRepository.GetByUsernameAsync(username);
-        if (user == null)
+        var userActivities = this.userStatusProvider.GetActivities();
+        var users = userRepository.GetByUsernamesAsync(userActivities.Keys);
+        await foreach (var user in users)
         {
-            throw new Exception($"Пользователь с логином {username} не найден.");
+            user.LastActivityTime = userActivities[user.Username];
+            userRepository.Update(user);
         }
 
-        user.LastActiveTime = lastActiveTime;
-        userRepository.Update(user);
         await unitOfWork.SaveChangesAsync();
     }
 
@@ -98,7 +100,7 @@ public class UserService:IUserService
     private async Task UploadFile(string username, IFormFile file)
     {
         var fileName = $"{username}{Path.GetExtension(file.FileName)}";
-        var uploadFolder = Path.Combine(webHostEnvironment.WebRootPath, "avatars");
+        var uploadFolder = Path.Combine(webHostEnvironment.ContentRootPath, "avatars");
 
         if (!Directory.Exists(uploadFolder))
         {
@@ -106,11 +108,11 @@ public class UserService:IUserService
         }
 
         var filePath = Path.Combine(uploadFolder, fileName);
-
-        // Overwrite the existing file
-        if (File.Exists(filePath))
+        var existedFile = Directory.GetFiles(uploadFolder)
+            .SingleOrDefault(f => Path.GetFileNameWithoutExtension(f) == username);
+        if (existedFile != null)
         {
-            File.Delete(filePath);
+            File.Delete(existedFile);
         }
 
         await using var fileStream = new FileStream(filePath, FileMode.CreateNew);
