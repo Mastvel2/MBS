@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBS.Host", "MBS.Host\MBS.Ho
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBS.Domain", "MBS.Domain\MBS.Domain.csproj", "{198E2540-927D-442A-B3AE-3619ADD11997}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBS.Application", "MBS.Application\MBS.Application.csproj", "{D2CC3885-A1DA-42DF-A3A3-0A4B9637CF73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBS.Infrastructure", "MBS.Infrastructure\MBS.Infrastructure.csproj", "{6FF84ABB-85D4-4F30-90CB-B82EA2FF7702}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{198E2540-927D-442A-B3AE-3619ADD11997}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{198E2540-927D-442A-B3AE-3619ADD11997}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{198E2540-927D-442A-B3AE-3619ADD11997}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2CC3885-A1DA-42DF-A3A3-0A4B9637CF73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2CC3885-A1DA-42DF-A3A3-0A4B9637CF73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2CC3885-A1DA-42DF-A3A3-0A4B9637CF73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2CC3885-A1DA-42DF-A3A3-0A4B9637CF73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF84ABB-85D4-4F30-90CB-B82EA2FF7702}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FF84ABB-85D4-4F30-90CB-B82EA2FF7702}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FF84ABB-85D4-4F30-90CB-B82EA2FF7702}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FF84ABB-85D4-4F30-90CB-B82EA2FF7702}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

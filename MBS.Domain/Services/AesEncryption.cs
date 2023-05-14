@@ -2,12 +2,20 @@
 
 namespace MBS.Domain.Services;
 
-public static class AesEncryption
+/// <summary>
+/// Сервис шифрования <see cref="Aes"/>.
+/// </summary>
+internal static class AesEncryption
 {
     private const int KeySize = 256;
     private const int BlockSize = 128;
 
-    public static string Encrypt(string plainText)
+    /// <summary>
+    /// Шифрует текст.
+    /// </summary>
+    /// <param name="plainText">Текст.</param>
+    /// <returns>Зашифрованный текст.</returns>
+    internal static string Encrypt(string plainText)
     {
         using var aes = Aes.Create();
         aes.KeySize = KeySize;
@@ -36,7 +44,12 @@ public static class AesEncryption
         }
     }
 
-    public static string Decrypt(string encryptedText)
+    /// <summary>
+    /// Расшифровывает текст.
+    /// </summary>
+    /// <param name="encryptedText">Зашифрованный текст.</param>
+    /// <returns>Расшифрованный текст.</returns>
+    internal static string Decrypt(string encryptedText)
     {
         using var aes = Aes.Create();
         aes.KeySize = KeySize;

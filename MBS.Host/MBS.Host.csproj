@@ -1,20 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
-
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.16" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.24.0" />
         <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
-
     <ItemGroup>
-      <ProjectReference Include="..\MBS.Domain\MBS.Domain.csproj" />
+      <ProjectReference Include="..\MBS.Application\MBS.Application.csproj" />
+      <ProjectReference Include="..\MBS.Infrastructure\MBS.Infrastructure.csproj" />
     </ItemGroup>
-
 </Project>

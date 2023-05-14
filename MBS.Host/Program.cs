@@ -2,26 +2,27 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
-using MBS.Domain.Entities;
+using MBS.Application.Providers;
+using MBS.Application.Services;
 using MBS.Domain.Repositories;
 using MBS.Domain.Services;
-using MBS.Host.ApplicationServices;
-using MBS.Host.InfrastructureServices;
 using MBS.Host.Middlewares;
-using MBS.Host.Providers;
-using MBS.Host.Repositories;
+using MBS.Host.Services;
+using MBS.Host.Settings;
+using MBS.Infrastructure;
+using MBS.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+const string corsPolicy = "appPolicy";
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(builderP =>
-    {
-        builderP.WithOrigins("http://localhost:3000")
+    options.AddPolicy(corsPolicy, policyBuilder =>
+        policyBuilder.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+            .AllowAnyMethod()
+    );
 });
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -60,8 +61,9 @@ builder.Services.AddScoped<IUserIdentityRepository, UserIdentityRepository>();
 builder.Services.AddScoped<IUserIdentityService, UserIdentityService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddSingleton<IMessageNotificationService, MessageNotificationService>();
 builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
-builder.Services.AddSingleton<IUserStatusProvider, UserStatusProvider>();
+builder.Services.AddSingleton<IUserActivityProvider, UserActivityProvider>();
 builder.Services.AddHostedService<UserActivityBackgroundService>();
 
 var app = builder.Build();
@@ -73,14 +75,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(policy => policy
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader())
+app.UseCors(corsPolicy)
     .UseRouting()
     .UseAuthentication()
     .UseAuthorization()
-    .UseMiddleware<UserStatusMiddleware>()
+    .UseMiddleware<UserActivityMiddleware>()
     .UseEndpoints(endpoints => endpoints.MapControllers())
     .UseHttpsRedirection();
 

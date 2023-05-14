@@ -1,60 +1,71 @@
-﻿using MBS.Host.ApplicationServices;
-using MBS.Host.Dtos;
+﻿namespace MBS.Host.Controllers;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MBS.Application.Dtos;
+using MBS.Application.Services;
 
-namespace MBS.Host.Controllers
+/// <summary>
+/// Контроллер аккаунтов.
+/// </summary>
+[ApiController]
+[Route("api/[controller]")]
+public class AccountController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    // Класс контроллера для работы с аккаунтами пользователей
-    public class AccountController : ControllerBase
+    private readonly IUserIdentityService userIdentityService;
+
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="AccountController"/>.
+    /// </summary>
+    /// <param name="userIdentityService">Сервис идентификационных данных пользователей.</param>
+    public AccountController(IUserIdentityService userIdentityService)
     {
-        private readonly IUserIdentityService userIdentityService;
+        this.userIdentityService = userIdentityService ?? throw new ArgumentNullException(nameof(userIdentityService));
+    }
 
-        // Конструктор, принимает сервис IUserIdentityService
-        public AccountController(IUserIdentityService userIdentityService)
+    /// <summary>
+    /// Регистрирует пользователя.
+    /// </summary>
+    /// <param name="userRegistrationDto">DTO регистрации пользователя.</param>
+    /// <returns>Результат регистрации пользователя.</returns>
+    [HttpPost("register")]
+    [Authorize("create_user")]
+    public async Task<IActionResult> Register([FromBody] UserRegistrationDto userRegistrationDto)
+    {
+        try
         {
-            this.userIdentityService = userIdentityService ?? throw new ArgumentNullException(nameof(userIdentityService));
+            // Вызываем метод регистрации из сервиса и передаем DTO
+            await this.userIdentityService.RegisterAsync(userRegistrationDto);
+            // В случае успеха возвращаем статус 200 (OK) и сообщение
+            return this.Ok();
         }
-
-        // Метод для регистрации пользователя
-        [HttpPost("register")]
-        [Authorize("create_user")]
-        public async Task<IActionResult> Register([FromBody] UserRegistrationDto userRegistrationDto)
+        catch (Exception ex)
         {
-            try
-            {
-                // Вызываем метод регистрации из сервиса и передаем DTO
-                await userIdentityService.RegisterAsync(userRegistrationDto);
-                // В случае успеха возвращаем статус 200 (OK) и сообщение
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
-                return BadRequest(ex.Message);
-            }
+            // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
+            return this.BadRequest(ex.Message);
         }
+    }
 
-        // Метод для авторизации пользователя
-        [HttpPost("login")]
-        public async Task<ActionResult<TokenDto>> Login(
-            [FromBody] UserAuthorizationDto userAuthorizationDto)
+    /// <summary>
+    /// Авторизирует пользователя.
+    /// </summary>
+    /// <param name="userAuthorizationDto">DTO авторизации пользователя.</param>
+    /// <returns>Результат авторизации пользователя.</returns>
+    [HttpPost("login")]
+    public async Task<ActionResult<TokenDto>> Login([FromBody] UserAuthorizationDto userAuthorizationDto)
+    {
+        try
         {
-            try
-            {
-                // Вызываем метод авторизации из сервиса и передаем DTO
-                var tokenDto = await this.userIdentityService
-                    .AuthorizeAsync(userAuthorizationDto);
-                // В случае успеха возвращаем статус 200 (OK) и данные о токене
-                return this.Ok(tokenDto);
-            }
-            catch (Exception ex)
-            {
-                // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
-                return this.BadRequest(ex.Message);
-            }
+            // Вызываем метод авторизации из сервиса и передаем DTO
+            var tokenDto = await this.userIdentityService
+                .AuthorizeAsync(userAuthorizationDto);
+            // В случае успеха возвращаем статус 200 (OK) и данные о токене
+            return this.Ok(tokenDto);
+        }
+        catch (Exception ex)
+        {
+            // В случае ошибки возвращаем статус 400 (Bad Request) и сообщение об ошибке
+            return this.BadRequest(ex.Message);
         }
     }
 }
