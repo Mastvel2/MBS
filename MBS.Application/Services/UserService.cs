@@ -85,9 +85,16 @@ public class UserService : IUserService
     {
         var userActivities = this.userActivityProvider.GetActivities();
         var users = this.userRepository.GetByUsernamesAsync(userActivities.Keys);
+        var currentTime = DateTime.Now;
         await foreach (var user in users)
         {
-            user.LastActivityTime = userActivities[user.Username];
+            var lastActivityTime = userActivities[user.Username];
+            if (currentTime - lastActivityTime >= MaxInactiveTime)
+            {
+                this.userActivityProvider.DeleteActivity(user.Username);
+            }
+
+            user.LastActivityTime = lastActivityTime;
             this.userRepository.Update(user);
         }
 
