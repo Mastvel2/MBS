@@ -6,6 +6,7 @@ using MBS.Application.Providers;
 using MBS.Application.Services;
 using MBS.Domain.Repositories;
 using MBS.Domain.Services;
+using MBS.Host.Hubs;
 using MBS.Host.Middlewares;
 using MBS.Host.Services;
 using MBS.Host.Settings;
@@ -37,6 +38,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = false,
             ValidateAudience = false,
             ClockSkew = TimeSpan.Zero,
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Headers.Authorization.SingleOrDefault();
+                var path = context.HttpContext.Request.Path.Value;
+                if (!string.IsNullOrEmpty(accessToken) && path?.StartsWith("/ws") == true)
+                {
+                    context.Token = accessToken.Replace("Bearer ", string.Empty);
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 builder.Services.AddAuthorization(options =>
@@ -82,6 +98,6 @@ app.UseCors(corsPolicy)
     .UseMiddleware<UserActivityMiddleware>()
     .UseEndpoints(endpoints => endpoints.MapControllers())
     .UseHttpsRedirection();
-
+app.MapHub<MessageHub>("/ws/messages");
 app.MapControllers();
 await app.RunAsync();
