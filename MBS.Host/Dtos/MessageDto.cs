@@ -2,7 +2,7 @@
 
 public class MessageDto
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Sender { get; set; }
     public string Receiver { get; set; }
     public string EncryptedText { get; set; }

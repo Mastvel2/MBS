@@ -14,46 +14,32 @@ public class MessageRepository : IMessageRepository
         context = contextDb;
     }
 
-    public async Task<Message> GetLatestMessageAsync(string user1, string user2)
+    public IAsyncEnumerable<Message> GetMessagesBetweenUsersAsync(string firstUser, string secondUser)
     {
-        return await context.Messages
-            .Where(m => (m.Sender == user1 && m.Receiver == user2) || (m.Sender == user2 && m.Receiver == user1))
-            .OrderByDescending(m => m.Timestamp)
-            .FirstOrDefaultAsync();
-    }
-
-    public async Task<IEnumerable<Message>> GetMessagesAsync(string user1, string user2)
-    {
-        return await context.Messages
-            .Where(m => (m.Sender == user1 && m.Receiver == user2) || (m.Sender == user2 && m.Receiver == user1))
+        return context.Messages
+            .Where(m => (m.Sender == firstUser && m.Receiver == secondUser)
+                        || (m.Sender == secondUser && m.Receiver == firstUser))
             .OrderBy(m => m.Timestamp)
-            .ToListAsync();
+            .AsAsyncEnumerable();
     }
 
-    public async Task<Message> GetMessageByIdAsync(int id)
+    public Task<Message> GetByIdAsync(Guid id)
     {
-        return await context.Messages.FirstOrDefaultAsync(m => m.Id == id);
+        return context.Messages.SingleOrDefaultAsync(m => m.Id == id);
     }
 
-    public async Task AddMessageAsync(Message message)
+    public void Add(Message message)
     {
-        await context.Messages.AddAsync(message);
-        await context.SaveChangesAsync();
+        context.Messages.Add(message);
     }
 
-    public async Task UpdateMessageAsync(Message message)
+    public void Update(Message message)
     {
         context.Messages.Update(message);
-        await context.SaveChangesAsync();
     }
 
-    public async Task DeleteMessageAsync(int id)
+    public void Delete(Message message)
     {
-        var message = await context.Messages.FindAsync(id);
-        if (message != null)
-        {
-            context.Messages.Remove(message);
-            await context.SaveChangesAsync();
-        }
+        context.Messages.Remove(message);
     }
 }

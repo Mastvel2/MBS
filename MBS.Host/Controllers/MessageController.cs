@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MBS.Host.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api")]
 public class MessageController : ControllerBase
 {
     private readonly IMessageService messageService;
@@ -16,19 +16,12 @@ public class MessageController : ControllerBase
     }
 
     // Получить все сообщения между пользователями
-    [HttpGet("messages/{user1}/{user2}")]
+    [HttpGet("messages")]
     public async Task<ActionResult<IEnumerable<Message>>> GetMessagesAsync(string user1, string user2)
     {
-        var messages = await messageService.GetMessagesAsync(user1, user2);
+        var username = this.User.Identity!.Name;
+        var messages = await messageService.GetMessagesBetweenUsersAsync(user1, user2);
         return Ok(messages);
-    }
-
-    // Получить последнее сообщение между пользователями
-    [HttpGet("latest-message/{user1}/{user2}")]
-    public async Task<ActionResult<Message>> GetLatestMessageAsync(string user1, string user2)
-    {
-        var latestMessage = await messageService.GetLatestMessageAsync(user1, user2);
-        return Ok(latestMessage);
     }
 
     // Отправить сообщение
@@ -43,7 +36,7 @@ public class MessageController : ControllerBase
     [HttpPut("update-message/{messageId}")]
     public async Task<IActionResult> UpdateMessageAsync(int messageId, [FromBody] string updatedText)
     {
-        await messageService.UpdateMessageAsync(messageId, updatedText);
+        await messageService.EditMessageTextAsync(messageId, updatedText);
         return NoContent();
     }
 }

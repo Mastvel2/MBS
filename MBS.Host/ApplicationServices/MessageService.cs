@@ -10,56 +10,50 @@ public class MessageService : IMessageService
     private readonly IMessageRepository messageRepository;
     private readonly IWebHostEnvironment webHostEnvironment;
     private readonly IUnitOfWork unitOfWork;
+    private readonly IUserRepository userRepository;
 
-    public MessageService(IMessageRepository messageRepository,
-        IWebHostEnvironment webHostEnvironment,IUnitOfWork unitOfWork)
+    public MessageService(
+        IMessageRepository messageRepository,
+        IWebHostEnvironment webHostEnvironment,
+        IUnitOfWork unitOfWork,
+        IUserRepository userRepository)
     {
         this.messageRepository = messageRepository;
         this.webHostEnvironment = webHostEnvironment;
         this.unitOfWork = unitOfWork;
+        this.userRepository = userRepository;
     }
 
-    public async Task<Message> GetLatestMessageAsync(string user1, string user2)
+    public async Task<IEnumerable<MessageDto>> GetMessagesBetweenUsersAsync(string firstUser, string secondUser)
     {
-        var latestMessage = await messageRepository.GetLatestMessageAsync(user1, user2);
+        return await messageRepository.GetMessagesBetweenUsersAsync(firstUser, secondUser)
+            .Select(this.GetMessageDto).ToListAsync();
+    }
 
-        if (latestMessage != null)
+    public async Task SendMessageAsync(string sender, SendMessageDto dto)
+    {
+        var receiverUser = await this.userRepository.GetByUsernameAsync(dto.Receiver);
+        if (receiverUser == null)
         {
-            latestMessage.EncryptedText = AesEncryption.Decrypt(latestMessage.EncryptedText);
+            throw new Exception($"Отправитель с именем пользователя {dto.Receiver} не существует");
         }
 
-        return latestMessage;
-    }
-
-    public async Task<IEnumerable<Message>> GetMessagesAsync(string user1, string user2)
-    {
-        var messages = (await messageRepository.GetMessagesAsync(user1, user2)).ToList();
-
-        foreach (var message in messages)
-        {
-            message.EncryptedText = AesEncryption.Decrypt(message.EncryptedText);
-        }
-
-        return messages;
-    }
-
-    public async Task<Message> SendMessageAsync(Message message)
-    {
-        message.EncryptedText = AesEncryption.Encrypt(message.EncryptedText);
-        await messageRepository.AddMessageAsync(message);
+        var message = new Message(sender, dto.Receiver, dto.Text);
+        messageRepository.Add(message);
         await unitOfWork.SaveChangesAsync();
-        return message;
     }
 
-    public async Task UpdateMessageAsync(int messageId, string updatedText)
+    public async Task EditMessageTextAsync(EditMessageTextDto dto)
     {
-        var message = await messageRepository.GetMessageByIdAsync(messageId);
-        if (message != null)
+        var message = await messageRepository.GetByIdAsync(dto.Id);
+        if (message == null)
         {
-            message.EncryptedText = updatedText;
-            await messageRepository.UpdateMessageAsync(message);
-            await unitOfWork.SaveChangesAsync();
+            throw new Exception($"Сообщение с идентификатором {dto.Id} не существует");
         }
+
+        message.EditText(dto.Text);
+        messageRepository.Update(message);
+        await unitOfWork.SaveChangesAsync();
     }
 
     public async Task<string> UploadFileAsync(IFormFile file)
@@ -94,14 +88,27 @@ public class MessageService : IMessageService
         }
     }
 
+    public async Task DeleteMessageAsync(Guid id)
+    {
+        var message = await messageRepository.GetByIdAsync(id);
+        if (message == null)
+        {
+            return;
+        }
+
+        messageRepository.Delete(message);
+        await unitOfWork.SaveChangesAsync();
+    }
+
     private MessageDto GetMessageDto(Message message)
     {
+
         return new MessageDto
         {
             Id = message.Id,
             Sender = message.Sender,
             Receiver = message.Receiver,
-            EncryptedText = AesEncryption.Decrypt(message.EncryptedText),
+            EncryptedText = AesEncryption.Decrypt(message.Text),
             Timestamp = message.Timestamp,
         };
     }

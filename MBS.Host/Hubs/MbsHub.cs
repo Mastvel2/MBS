@@ -1,4 +1,3 @@
-using MBS.Host.ApplicationServices;
 using Microsoft.AspNetCore.SignalR;
 
 namespace MBS.Host.Hubs;

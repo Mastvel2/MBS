@@ -4,10 +4,9 @@ namespace MBS.Domain.Repositories;
 
 public interface IMessageRepository
 {
-    Task<Message> GetLatestMessageAsync(string user1, string user2);
-    Task<IEnumerable<Message>> GetMessagesAsync(string user1, string user2);
-    Task<Message> GetMessageByIdAsync(int id);
-    Task AddMessageAsync(Message message);
-    Task UpdateMessageAsync(Message message);
-    Task DeleteMessageAsync(int id);
+    IAsyncEnumerable<Message> GetMessagesBetweenUsersAsync(string firstUser, string secondUser);
+    Task<Message> GetByIdAsync(Guid id);
+    void Add(Message message);
+    void Update(Message message);
+    void Delete(Message message);
 }

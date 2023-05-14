@@ -5,10 +5,10 @@ namespace MBS.Host.ApplicationServices;
 
 public interface IMessageService
 {
-    Task<Message> GetLatestMessageAsync(string user1, string user2);
-    Task<IEnumerable<Message>> GetMessagesAsync(string user1, string user2);
-    Task<Message> SendMessageAsync(Message message);
+    Task<IEnumerable<MessageDto>> GetMessagesBetweenUsersAsync(string firstUser, string secondUser);
+    Task SendMessageAsync(string sender, SendMessageDto dto);
     Task<string> UploadFileAsync(IFormFile file);
     Task<byte[]> DownloadFileAsync(string fileName);
-    Task UpdateMessageAsync(int messageId, string updatedText);
+    Task EditMessageTextAsync(EditMessageTextDto dto);
+    Task DeleteMessageAsync(Guid id);
 }

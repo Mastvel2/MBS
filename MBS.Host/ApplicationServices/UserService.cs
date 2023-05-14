@@ -3,7 +3,6 @@ using MBS.Domain.Repositories;
 using MBS.Domain.Services;
 using MBS.Host.Dtos;
 using MBS.Host.Providers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace MBS.Host.ApplicationServices;
 
@@ -24,11 +23,6 @@ public class UserService:IUserService
 
     public async Task<IEnumerable<UserDto>> GetAvailableUsersAsync(string currentUser)
     {
-        if (string.IsNullOrWhiteSpace(currentUser))
-        {
-            throw new ArgumentException("Требуется текущий пользователь.");
-        }
-
         var users = userRepository.GetAllAsync();
         return await users.Where(u => u.Username != currentUser)
             .Select(this.GetUserDto).ToListAsync();
@@ -63,7 +57,7 @@ public class UserService:IUserService
         var user = await userRepository.GetByUsernameAsync(username);
         if (user == null)
         {
-            throw new Exception("Пользователь не найден.");
+            throw new Exception($"Пользователь c логином {username} не найден.");
         }
 
         await UploadFile(username, avatarFile);

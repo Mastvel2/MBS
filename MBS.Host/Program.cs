@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builderP =>
     {
-        builderP.WithOrigins("http://25.49.104.27:3000")
+        builderP.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -73,15 +73,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseRouting()
+app.UseCors(policy => policy
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader())
+    .UseRouting()
     .UseAuthentication()
     .UseAuthorization()
     .UseMiddleware<UserStatusMiddleware>()
     .UseEndpoints(endpoints => endpoints.MapControllers())
-    .UseHttpsRedirection()
-    .UseCors(policy => policy
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
+    .UseHttpsRedirection();
+
 app.MapControllers();
 await app.RunAsync();

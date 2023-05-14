@@ -23,7 +23,7 @@ public class MessageConfiguration : IEntityTypeConfiguration<Message>
         builder.Property(m => m.Receiver)
             .HasColumnName("receiver");
 
-        builder.Property(m => m.EncryptedText)
+        builder.Property(m => m.Text)
             .HasColumnName("encrypted_text");
 
         builder.Property(m => m.Timestamp)
