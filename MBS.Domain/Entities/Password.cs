@@ -31,6 +31,15 @@ public class Password
     }
 
     /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="Password"/>.
+    /// </summary>
+    [Obsolete("ORM Only")]
+    protected Password()
+    {
+    }
+
+
+    /// <summary>
     /// Проверяет, соответствует ли предоставленный
     /// пароль хранящемуся хешу и соли, сравнивая сгенерированный хеш с хранящимся хешем.
     /// </summary>

@@ -41,8 +41,9 @@ public class UserController : ControllerBase
     /// </summary>
     /// <returns>Пользователь.</returns>
     [HttpGet("users/current")]
-    public async Task<ActionResult<UserDto>> GetCurrentUser(string username)
+    public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
+        var username = this.User.Identity!.Name;
         try
         {
             var user = await this.userService.GetUserAsync(username);

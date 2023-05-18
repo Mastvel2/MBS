@@ -23,5 +23,10 @@ public class UserDto
     /// <summary>
     /// Последняя дата активности.
     /// </summary>
-    public DateTime LastActivityTime { get; set; }
+    public DateTime? LastActivityTime { get; set; }
+
+    /// <summary>
+    /// Отображаемое имя пользователя
+    /// </summary>
+    public string DisplayName { get; set; }
 }

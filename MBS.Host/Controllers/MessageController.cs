@@ -1,8 +1,8 @@
 ﻿namespace MBS.Host.Controllers;
 
-using MBS.Application.Dtos;
+using Application.Dtos;
 using MBS.Application.Services;
-using MBS.Domain.Entities;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

@@ -28,4 +28,9 @@ public class User
     /// Последнее время активности.
     /// </summary>
     public DateTime? LastActivityTime { get; set; }
+
+    /// <summary>
+    /// Отображаемое имя пользователя
+    /// </summary>
+    public string DisplayName { get; set; }
 }

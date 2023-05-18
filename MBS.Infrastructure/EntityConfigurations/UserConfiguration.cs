@@ -27,5 +27,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.LastActivityTime)
             .HasColumnName("last_activity_time");
+
+        builder.Property(u => u.DisplayName)
+            .HasColumnName("display_name");
     }
 }

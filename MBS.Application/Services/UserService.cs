@@ -65,6 +65,7 @@ public class UserService : IUserService
         }
 
         user.AboutMe = userUpdateDto.AboutMe;
+        user.DisplayName = userUpdateDto.DisplayName;
         this.userRepository.Update(user);
         await this.unitOfWork.SaveChangesAsync();
     }
@@ -108,6 +109,8 @@ public class UserService : IUserService
             Username = user.Username,
             AboutMe = user.AboutMe,
             Status = this.GetUserStatus(user.Username),
+            DisplayName = user.DisplayName,
+            LastActivityTime = user.LastActivityTime,
         };
     }
 

@@ -60,6 +60,7 @@ public class MessageService : IMessageService
             Id = message.Id,
             Sender = sender,
             Text = dto.Text,
+            Timestamp = message.Timestamp,
         });
     }
 

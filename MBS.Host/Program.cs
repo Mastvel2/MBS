@@ -23,6 +23,7 @@ builder.Services.AddCors(options =>
         policyBuilder.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod()
+            .AllowCredentials()
     );
 });
 // Add services to the container.
@@ -81,7 +82,7 @@ builder.Services.AddSingleton<IMessageNotificationService, MessageNotificationSe
 builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
 builder.Services.AddSingleton<IUserActivityProvider, UserActivityProvider>();
 builder.Services.AddHostedService<UserActivityBackgroundService>();
-
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

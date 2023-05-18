@@ -25,6 +25,14 @@ public class Message
     }
 
     /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="Message"/>.
+    /// </summary>
+    [Obsolete("ORM Only")]
+    protected Message()
+    {
+    }
+
+    /// <summary>
     /// Идентификатор.
     /// </summary>
     public Guid Id { get; protected set; }

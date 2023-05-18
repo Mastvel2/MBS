@@ -9,4 +9,9 @@ public class UserUpdateDto
     /// Обо мне.
     /// </summary>
     public string AboutMe { get; set; }
+
+    /// <summary>
+    /// Отображаемое имя.
+    /// </summary>
+    public string DisplayName { get; set; }
 }
